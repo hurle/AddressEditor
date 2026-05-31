@@ -14,8 +14,18 @@ namespace Infrastructure.Data.Repositories
         }
         public async Task<IEnumerable<Address>> GetAllAsync() 
         {
-            using var context = _contextFactory.CreateDbContext();
-            return await context.Address.AsNoTracking().ToListAsync();
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                var addresses = await context.Address.AsNoTracking().ToListAsync();
+                return addresses;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw ex;
+            }
+
         }
         public async Task UpdateAsync(Address address)
         {

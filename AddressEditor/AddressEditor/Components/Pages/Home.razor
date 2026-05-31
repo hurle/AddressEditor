@@ -1,7 +1,27 @@
 ﻿@page "/"
+@rendermode InteractiveServer
+
+@using Core.Application.Commands
+@using MediatR
+
+@inject IMediator Mediator
+
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
-
+<button class="bg-blue-500 rounded" @onclick="testGetAll">test</button>
+@code{
+    private async Task testGetAll()
+    {
+        try
+        {
+            var addresses = await Mediator.Send(new UpdateAddressCommand());
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+}
 Welcome to your new app.

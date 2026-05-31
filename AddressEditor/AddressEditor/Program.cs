@@ -1,5 +1,8 @@
 using AddressEditor.Components;
+using Core.Application.Commands;
+using Core.Application.Interfaces;
 using Infrastructure.Data.Context;
+using Infrastructure.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +17,8 @@ var config = new ConfigurationBuilder()
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddMediatR(config => config.RegisterServicesFromAssemblies(typeof(UpdateAddressCommand).Assembly));
+builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseSqlServer(config.GetConnectionString("AddressConnection")));
 

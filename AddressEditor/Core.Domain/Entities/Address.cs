@@ -6,7 +6,7 @@ namespace Core.Domain.Entities
     {
         public int AddressId { get; set; }
         public string AddressLine1 { get; set; }
-        public string AddressLine2 { get; set; }
+        public string? AddressLine2 { get; set; }
 	    public string City { get;set; }
         public string StateProvince { get; set; }
         public string CountryRegion { get; set; }
@@ -14,7 +14,8 @@ namespace Core.Domain.Entities
         public Guid RowGuid { get; set; }
         public DateTime ModifiedDate{ get; set; }
 
-        public Address(int addressId, string addressLine1, string addressLine2, string city, string stateProvidence, string countryRegion, string postalCode, Guid rowGuid, DateTime modifiedDate) 
+        public Address() { }
+        public Address(int addressId, string addressLine1, string? addressLine2, string city, string stateProvidence, string countryRegion, string postalCode, Guid rowGuid, DateTime modifiedDate) 
         {
             AddressId = addressId;
             AddressLine1 = addressLine1;

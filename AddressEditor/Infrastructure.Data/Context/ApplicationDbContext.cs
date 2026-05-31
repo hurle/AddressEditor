@@ -20,6 +20,12 @@ namespace Infrastructure.Data.Context
                 entity.HasKey(x => x.AddressId);
                 entity.Property(x => x.City).HasColumnName("City");
                 entity.Property(x => x.StateProvince).HasColumnName("StateProvince");
+                entity.Property(x => x.AddressLine1).HasColumnName("AddressLine1");
+                entity.Property(x => x.AddressLine2).HasColumnName("AddressLine2");
+                entity.Property(x => x.CountryRegion).HasColumnName("CountryRegion");
+                entity.Property(x => x.PostalCode).HasColumnName("PostalCode");
+                entity.Property(x => x.RowGuid).HasColumnName("RowGuid");
+                entity.Property(x => x.ModifiedDate).HasColumnName("ModifiedDate");
             });
         }
     }
