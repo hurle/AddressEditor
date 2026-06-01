@@ -16,14 +16,21 @@ namespace Core.Application.Handlers
 
         public async Task<bool> Handle(UpdateAddressCommand request, CancellationToken cancellationToken)
         {
-            var addresses = await _addressRepository.GetAllAsync();
-            var currentAddress = addresses.FirstOrDefault(x => x.AddressId == request.addressId);
-            if (currentAddress == null)
+            try
             {
-                throw new KeyNotFoundException("The address do not exists.");
+                var currentAddress = await _addressRepository.GetById(request.addressId);
+                if (currentAddress == null)
+                {
+                    throw new KeyNotFoundException("The address do not exists.");
+                }
+                currentAddress.UpdateAddress(request.city, request.stateProvidence);
+                await _addressRepository.UpdateAsync(currentAddress);
+                return true;
             }
-            currentAddress.UpdateAddress(request.city, request.stateProvidence);
-            return true;
+            catch(Exception ex)
+            {
+                throw ex;
+            }
         }
 
         

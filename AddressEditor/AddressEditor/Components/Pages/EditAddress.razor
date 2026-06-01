@@ -18,14 +18,29 @@
 
                 <div class="modal-body">
                     <form @onsubmit="SaveChanges">
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">City</label>
-                            <input type="text" class="form-control" value="@address.City" required/>
-                        </div>
+                        
 
                         <div class="mb-3">
                             <label class="form-label fw-bold">State</label>
-                            <input type="text" class="form-control" value="@address.StateProvince" required />
+                            <!--<input type="text" class="form-control" value="@address.StateProvince" required />-->
+                            <select class="form-select" @bind="state">
+                                <option value="">Select a State</option>
+                                @foreach (var state in availableStates)
+                                {
+                                    <option value="@state">@state</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">City</label>
+                            <select class="form-select" @bind="city">
+                                <option value="">Select a City</option>
+                                @foreach (var city in availableCities)
+                                {
+                                    <option value="@city">@city</option>
+                                }
+                            </select>
                         </div>
 
                         <div class="modal-footer px-0 pb-0 mt-4">
@@ -44,8 +59,23 @@
     [Parameter] public Address address{ get; set; }
     [Parameter] public EventCallback OnCloseModal { get; set; }
     [Parameter] public EventCallback OnSaveChanges { get; set; }
+    [Parameter] public IEnumerable<Address> allAddresses { get; set; }
+
     private string city { set; get; }
     private string state { set; get; }
+
+    private IEnumerable<string> availableStates => allAddresses
+        .Where(s => !string.IsNullOrWhiteSpace(s.StateProvince))
+        .Select(s => s.StateProvince)
+        .Distinct()
+        .OrderBy(s => s);
+
+    private IEnumerable<string> availableCities => allAddresses
+        .Where(c => !string.IsNullOrWhiteSpace(c.StateProvince) && c.StateProvince == state)
+        .Select(c => c.City)
+        .Distinct()
+        .OrderBy(c => c);
+
 
     protected override void OnParametersSet()
     {
@@ -53,7 +83,7 @@
         {
             city = address.City;
             state = address.StateProvince;
-        }   
+        }
     }
 
     private async Task CloseModal()
@@ -65,7 +95,6 @@
     {
         if (address != null)
         {
-            address.UpdateAddress(city, state);
             var request = new UpdateAddressCommand();
             request.city = city;
             request.stateProvidence = state;

@@ -11,5 +11,6 @@ namespace Core.Application.Interfaces
     {
         Task<IEnumerable<Address>> GetAllAsync();
         Task UpdateAsync(Address address);
+        Task <Address> GetById(int id);
     }
 }

@@ -14,8 +14,8 @@
 
     <div class="mb-3">
         <div class="input-group shadow-sm">
-            <label class="input-group-text bg-white">Filtro test</label>
-            <input type="type" name="name" class="form-control" placeholder="Tyoe a word to filter." @bind="filterText" @bind:event="oninput"/>
+            <label class="input-group-text bg-white">Filter by Address Line 1</label>
+            <input type="type" name="name" class="form-control" placeholder="Type a word to filter." @bind="filterText" @bind:event="oninput"/>
         </div>
     </div>
 </div>
@@ -41,7 +41,7 @@
     </div>
 }
 
-<EditAddress showForm="@showForm" address="@selectedAddress" OnCloseModal="CloseModal" OnSaveChanges="SaveChanges" />
+<EditAddress showForm="@showForm" address="@selectedAddress" OnCloseModal="CloseModal" OnSaveChanges="SaveChanges" allAddresses="addresses"/>
 
 @code{
     bool isLoading = true;
