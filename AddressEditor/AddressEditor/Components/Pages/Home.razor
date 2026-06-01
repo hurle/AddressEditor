@@ -2,26 +2,111 @@
 @rendermode InteractiveServer
 
 @using Core.Application.Commands
+@using Core.Domain.Entities
 @using MediatR
 
 @inject IMediator Mediator
 
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="fw-bold">Availables Addresses</h1>
+    </div>
 
-<PageTitle>Home</PageTitle>
+    <div class="mb-3">
+        <div class="input-group shadow-sm">
+            <label class="input-group-text bg-white">Filtro test</label>
+            <input type="type" name="name" class="form-control" placeholder="Tyoe a word to filter." @bind="filterText" @bind:event="oninput"/>
+        </div>
+    </div>
+</div>
 
-<h1>Hello, world!</h1>
-<button class="bg-blue-500 rounded" @onclick="testGetAll">test</button>
+@if (!isLoading && addresses != null && addresses.Count() > 0)
+{
+    <QuickGrid Items="@filterAddresses" Pagination="@pagination" Class="table table-striped table-hover align-middle">
+        <PropertyColumn Property="@(a => a.AddressId)" Sortable="true" Title="ID"/>
+        <PropertyColumn Property="@(a => a.AddressLine1)" Sortable="true" Title="Address Line 1" />
+        <PropertyColumn Property="@(a => a.AddressLine2)" Sortable="true" Title="Address Line 2" />
+        <PropertyColumn Property="@(a => a.City)" Sortable="true" Title="City" />
+        <PropertyColumn Property="@(a => a.StateProvince)" Sortable="true" Title="State" />
+        <PropertyColumn Property="@(a => a.CountryRegion)" Sortable="true" Title="Region" />
+        <PropertyColumn Property="@(a => a.PostalCode)" Sortable="true" Title="P.C." />
+        <PropertyColumn Property="@(a => a.ModifiedDate)" Sortable="true" Title="Last Edition" />
+            <TemplateColumn>
+                <button class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1 mx-auto" @onclick="() => OpenForm(context)">Edit</button>
+            </TemplateColumn>
+    </QuickGrid>
+
+    <div class="page-size-selector">
+        <Paginator State="@pagination" />
+    </div>
+}
+
+<EditAddress showForm="@showForm" address="@selectedAddress" OnCloseModal="CloseModal" OnSaveChanges="SaveChanges" />
+
 @code{
-    private async Task testGetAll()
+    bool isLoading = true;
+    string error = string.Empty;
+    string filterText = string.Empty;
+    Address? selectedAddress;
+    bool showForm = false;
+
+    List<Address> addresses = new List<Address>();
+    PaginationState pagination = new PaginationState { ItemsPerPage = 15 };
+
+    private void OpenForm(Address currentAddress)
     {
+        selectedAddress = currentAddress;
+        showForm = true;
+    }
+
+    private void CloseModal()
+    {
+        showForm = false;
+        selectedAddress = null;
+    }
+
+    private async Task SaveChanges()
+    {
+        CloseModal();
+        await GetAllAddresses();
+    }
+
+    private IQueryable<Address> filterAddresses
+    {
+        get
+        {
+            var result = addresses?.AsQueryable() ?? Enumerable.Empty<Address>().AsQueryable();
+            if (!string.IsNullOrWhiteSpace(filterText))
+            {
+                result = result.Where(a => a.AddressLine1.Contains(filterText, StringComparison.OrdinalIgnoreCase));
+            }
+            return result;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetAllAddresses();
+    }
+
+    private async Task GetAllAddresses()
+    {
+        isLoading = true;
+        error = string.Empty;
+
         try
         {
-            var addresses = await Mediator.Send(new UpdateAddressCommand());
+            var request = new GetAllAddressesCommand();
+            addresses = await Mediator.Send(request);
         }
         catch (Exception ex)
         {
-            throw ex;
+            error = ex.Message;   
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 }
-Welcome to your new app.
+

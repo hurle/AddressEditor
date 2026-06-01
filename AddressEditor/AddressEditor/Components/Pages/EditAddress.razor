@@ -1,0 +1,78 @@
+﻿@rendermode InteractiveServer
+
+@using Core.Application.Commands
+@using Core.Domain.Entities
+@using MediatR
+@inject IMediator Mediator
+
+@if (showForm)
+{
+    <div class="modal fade show d-block" style="background-color: black;" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content shadow-lg">
+
+                <div class="modal-header bg-warning text-black">
+                    <label class="modal-title  fw-bold">Addess editor form</label>
+                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form @onsubmit="SaveChanges">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">City</label>
+                            <input type="text" class="form-control" value="@address.City" required/>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">State</label>
+                            <input type="text" class="form-control" value="@address.StateProvince" required />
+                        </div>
+
+                        <div class="modal-footer px-0 pb-0 mt-4">
+                            <button type="button" class="btn btn-danger" @onclick="CloseModal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>    
+}
+
+@code {
+    [Parameter] public bool showForm{ get; set; }
+    [Parameter] public Address address{ get; set; }
+    [Parameter] public EventCallback OnCloseModal { get; set; }
+    [Parameter] public EventCallback OnSaveChanges { get; set; }
+    private string city { set; get; }
+    private string state { set; get; }
+
+    protected override void OnParametersSet()
+    {
+        if (address != null)
+        {
+            city = address.City;
+            state = address.StateProvince;
+        }   
+    }
+
+    private async Task CloseModal()
+    {
+        await OnCloseModal.InvokeAsync();
+    }
+
+    private async Task SaveChanges()
+    {
+        if (address != null)
+        {
+            address.UpdateAddress(city, state);
+            var request = new UpdateAddressCommand();
+            request.city = city;
+            request.stateProvidence = state;
+            request.addressId = address.AddressId;
+            await Mediator.Send(request);
+
+            await OnSaveChanges.InvokeAsync();
+        }
+    }
+}

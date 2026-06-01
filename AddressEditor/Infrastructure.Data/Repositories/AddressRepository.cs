@@ -29,9 +29,18 @@ namespace Infrastructure.Data.Repositories
         }
         public async Task UpdateAsync(Address address)
         {
-            using var context = _contextFactory.CreateDbContext();
-            context.Entry(address).State = EntityState.Modified;
-            await context.SaveChangesAsync();
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                context.Entry(address).State = EntityState.Modified;
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw ex;
+            }
+            
         }
     }
 }
