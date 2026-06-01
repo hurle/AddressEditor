@@ -27,6 +27,22 @@ namespace Infrastructure.Data.Repositories
             }
 
         }
+
+        public async Task<Address> GetById(int id)
+        {
+            try
+            {
+                using var context = _contextFactory.CreateDbContext();
+                Address address = await context.Address.FindAsync(id);
+                return address;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                throw ex;
+            }
+        }
+
         public async Task UpdateAsync(Address address)
         {
             try
